@@ -9,7 +9,7 @@ ________
 
 ## 📚 Background
 
-Researchers using HTCondor often struggle to quickly understand how their computational workloads (clusters of jobs) are performing. Current interfaces expose too much raw data, making it difficult, especially for less experienced users—to diagnose issues like stuck jobs, poor resource utilization, or unexpected failures.
+Researchers using HTCondor often struggle to quickly understand how their computational workloads (clusters of jobs) are performing. Current interfaces expose too much raw data, making it difficult, especially for less experienced users—to diagnose issues like  jobs on hold, poor resource utilization, or unexpected failures.
 
 This project aimed to build tools that simplify job monitoring, flag issues, and offer meaningful insights into workload behavior using accessible metrics and clear visual feedback.
 
