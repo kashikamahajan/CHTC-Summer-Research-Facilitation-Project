@@ -40,7 +40,7 @@ ________
 
 Each tool is meant to be run as a standalone Python script with a cluster ID as input.
 
-Example command: python dashboard.py "<"ClusterId">"
+Example command: python dashboard.py `<ClusterId>`
 
 ________
 
