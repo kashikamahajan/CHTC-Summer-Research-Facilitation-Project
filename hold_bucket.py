@@ -180,7 +180,7 @@ Example:
 """
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python condor_hold_bucketer.py <ClusterId>")
+        print("Usage: python hold_bucket.py <ClusterId>")
         sys.exit(1)
 
     cluster_id = sys.argv[1]
