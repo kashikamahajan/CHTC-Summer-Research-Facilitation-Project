@@ -54,8 +54,8 @@ ________
       - Highlights abnormal patterns using ASCII charts
   
       ### 📊 Example: Cluster Status Dashboard Output
-`
-Cluster 4442821 Status Dashboard
+```
+Cluster 123 Status Dashboard
 
              Status | Bar                                                | Count |      %
 -----------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ Cluster 4442821 Status Dashboard
 Transferring Output |                                                    |     0 |   0.0%
           Suspended |                                                    |     0 |   0.0%
 
-`
+```
 
   
 
