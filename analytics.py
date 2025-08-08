@@ -4,17 +4,13 @@ import csv
 import statistics
 from collections import Counter
 from datetime import timedelta
+from utils import safe_float
 
 """
 This program provides a report on the resource request and usage for a cluster
 
 """
 
-def safe_float(val):
-    try:
-        return float(val)
-    except (ValueError, TypeError):
-        return None
 
 # to print the bar visualizations
 def bar(pct, width=50):
