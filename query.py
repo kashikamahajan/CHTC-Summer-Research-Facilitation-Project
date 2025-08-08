@@ -1,85 +1,106 @@
-import time
-import elasticsearch
+"""
+Elasticsearch Cluster Job Dumper
+
+This script connects to the CHTC Elasticsearch server, fetches all jobs
+for a given ClusterId (and optionally, a specific User), using the Scroll API
+(to handle large result sets), and writes them into a CSV file inside the
+'cluster_data/' directory.
+
+Usage:
+    query.py <ClusterId> [User]
+"""
+
+import os
 import csv
 import sys
-import os
+import elasticsearch
 
+# Constants
+ES_HOST = "https://elastic.osg.chtc.io/q"
+ES_USER = "*****"
+ES_PASS = "************"
+ES_INDEX = "adstash-ospool-job-history-*"
+MAX_RESULTS = 1000000
+SCROLL_DURATION = "5m"
 
-# Connect to Elasticsearch
-es = elasticsearch.Elasticsearch(
-    "https://elastic.osg.chtc.io/q",
-    http_auth=("*****", "************")
-)
+def connect_to_elasticsearch():
+    es = elasticsearch.Elasticsearch(ES_HOST, http_auth=(ES_USER, ES_PASS))
+    if not es.ping():
+        print("Error: Failed to connect to Elasticsearch.")
+        sys.exit(1)
+    return es
 
-# Get ClusterId from user input
-if len(sys.argv) != 2:
-    print("Usage: python script.py <ClusterId>")
-    sys.exit(1)
-
-try:
-    cluster_id = int(sys.argv[1])
-except ValueError:
-    print("ClusterId must be an integer.")
-    sys.exit(1)
-
-# Define query
-query = {
-    "query": {
-        "bool": {
-            "should": [
-                {"match": {"Owner": "yren86"}}
-            ]
+def build_query(cluster_id, user=None):
+    filters = [{"match": {"ClusterId": cluster_id}}]
+    if user:
+        filters.append({"match": {"Owner": user}})
+    
+    return {
+        "query": {
+            "bool": {
+                "must": filters
+            }
         }
     }
-}
 
-# Initial scroll
-response = es.search(
-    index="adstash-ospool-job-history-*",
-    body=query,
-    scroll='5m'
-)
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python dump_cluster_jobs.py <ClusterId> [User]")
+        sys.exit(1)
 
-scroll_id = response['_scroll_id']
-hits = response['hits']['hits']
+    try:
+        cluster_id = int(sys.argv[1])
+    except ValueError:
+        print("Error: ClusterId must be an integer.")
+        sys.exit(1)
 
-MAX_RESULTS = 1000000
-all_hits = []
-fieldnames = set()
+    user = sys.argv[2] if len(sys.argv) > 2 else None
 
-# Scroll loop
-while hits and len(all_hits) < MAX_RESULTS:
-    remaining = MAX_RESULTS - len(all_hits)
-    to_add = hits[:remaining]
+    es = connect_to_elasticsearch()
+    query = build_query(cluster_id, user)
 
-    all_hits.extend(to_add)
-    for hit in to_add:
-        fieldnames.update(hit['_source'].keys())
-
-    if len(all_hits) >= MAX_RESULTS:
-        break
-
-    response = es.scroll(scroll_id=scroll_id, scroll='5m')
+    # Start scroll
+    response = es.search(index=ES_INDEX, body=query, scroll=SCROLL_DURATION)
     scroll_id = response['_scroll_id']
     hits = response['hits']['hits']
 
+    all_hits = []
+    fieldnames = set()
 
-output_dir = os.path.join(os.getcwd(), "cluster_data")
-os.makedirs(output_dir, exist_ok=True)
+    while hits and len(all_hits) < MAX_RESULTS:
+        remaining = MAX_RESULTS - len(all_hits)
+        to_add = hits[:remaining]
+        all_hits.extend(to_add)
 
-print(output_dir)
+        for hit in to_add:
+            fieldnames.update(hit['_source'].keys())
 
-# Write to CSV
-csv_filename = os.path.join(output_dir, f"cluster_{cluster_id}_jobs.csv")
-print(csv_filename)
+        if len(all_hits) >= MAX_RESULTS:
+            break
 
-with open(csv_filename, 'w', newline='', encoding='utf-8') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=sorted(fieldnames))
-    writer.writeheader()
-    for hit in all_hits:
-        writer.writerow(hit['_source'])
+        response = es.scroll(scroll_id=scroll_id, scroll=SCROLL_DURATION)
+        scroll_id = response['_scroll_id']
+        hits = response['hits']['hits']
 
-print(f"Dumped {len(all_hits)} jobs for ClusterId {cluster_id} to {csv_filename}")
+    # Output directory and file
+    output_dir = os.path.join(os.getcwd(), "cluster_data")
+    os.makedirs(output_dir, exist_ok=True)
 
-# Cleanup
-es.clear_scroll(scroll_id=scroll_id)
+    user_suffix = f"_{user}" if user else ""
+    csv_filename = os.path.join(output_dir, f"cluster_{cluster_id}{user_suffix}_jobs.csv")
+
+    print(f"📂 Writing to: {csv_filename}")
+
+    with open(csv_filename, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=sorted(fieldnames))
+        writer.writeheader()
+        for hit in all_hits:
+            writer.writerow(hit['_source'])
+
+    print(f"Dumped {len(all_hits)} jobs for ClusterId {cluster_id}" + (f" and user '{user}'" if user else "") + f" to {csv_filename}")
+
+    # Clean up scroll
+    es.clear_scroll(scroll_id=scroll_id)
+
+if __name__ == "__main__":
+    main()
