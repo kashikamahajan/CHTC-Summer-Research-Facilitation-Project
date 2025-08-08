@@ -1,8 +1,8 @@
-from difflib import SequenceMatcher
-from tabulate import tabulate
+import sys
 import htcondor
 import classad
-import sys
+from difflib import SequenceMatcher
+from tabulate import tabulate
 
 
 """
