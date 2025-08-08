@@ -91,6 +91,30 @@ Transferring Output |                                                    |     0
       - Displays percentage and example reasons
       - Includes human-readable legend of hold codes
 
+``` 
+
+Cluster ID: 4323611
+Held Jobs in Cluster: 109
++---------------------+-----------+--------------------------+---------------------------------------------------------+
+| Hold Reason Label   |   SubCode | % of Held Jobs (Count)   | Example Reason                                          |
++=====================+===========+==========================+=========================================================+
+| StartdHeldJob       |         0 | 95.4% (104)              | Job failed to complete in 72 hrs                        |
++---------------------+-----------+--------------------------+---------------------------------------------------------+
+| JobExecuteExceeded  |         0 | 4.6% (5)                 | The job exceeded allowed execute duration of 3+00:00:00 |
++---------------------+-----------+--------------------------+---------------------------------------------------------+
+
+Legend:
+╒════════╤════════════════════╤═══════════════════════════════════════════════════════════════════════════╕
+│   Code │ Label              │ Reason                                                                    │
+╞════════╪════════════════════╪═══════════════════════════════════════════════════════════════════════════╡
+│     21 │ StartdHeldJob      │ The job was put on hold because WANT_HOLD in the machine policy was true. │
+├────────┼────────────────────┼───────────────────────────────────────────────────────────────────────────┤
+│     47 │ JobExecuteExceeded │ The job's allowed execution time was exceeded.                            │
+╘════════╧════════════════════╧═══════════════════════════════════════════════════════════════════════════╛
+
+```
+
+
 5. Resource Utilization Report
     Purpose: Compare requested vs actual usage
     Features:
