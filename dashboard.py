@@ -1,7 +1,8 @@
-import htcondor
-import classad
 import sys
 import math
+import htcondor
+import classad
+
 
 """
 This program provides an ASCII dashboard for the status of jobs in a cluster
