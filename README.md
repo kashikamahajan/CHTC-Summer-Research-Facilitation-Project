@@ -70,14 +70,41 @@ Transferring Output |                                                    |     0
 ```
 
   
-
-
 3. Cluster Runtime Histogram
     Purpose: Understand runtime variance across jobs
     Features:
       - Binned by percentiles
       - Flags jobs with runtime < 10 min
       - Can print list of affected job IDs
+  
+ 
+### Example: Cluster Runtime Histogram Output
+``` 
+Histogram of Job Runtimes by Percentiles:
+
+ClusterId: 4421577
+
+First Submitted : 2023-12-21
+Last Completed  : 1 week ago
+
+Percentile Time Range                    | Histogram             # Jobs
+-----------------------------------------------------------------------
+00–10%                    6s -         7s | ██████                    32
+10–20%                    7s -         8s | ████████████████████     104
+20–30%                    8s -     1m 45s | ████████████████          88
+30–40%                1m 45s -     3m 33s | ██████████████            75
+40–50%                3m 33s -    12m 14s | ██████████████            75
+50–60%               12m 14s -    20m 57s | ██████████████            74
+60–70%               20m 57s -     33m 8s | ██████████████            75
+70–80%                33m 8s -   1h 4m 1s | ██████████████            75
+80–90%              1h 4m 1s - 2h 32m 17s | ██████████████            75
+90–100%          2h 32m 17s - 14h 10m 28s | ██████████████            75
+
+Note: Bars in red represent bins with median runtime < 10 minutes.
+Info: Total number of jobs in such bins: 374
+
+
+```
 
 
 4. Hold Classifier
