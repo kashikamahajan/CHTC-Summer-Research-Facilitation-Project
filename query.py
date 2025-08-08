@@ -8,6 +8,9 @@ for a given ClusterId (and optionally, a specific User), using the Scroll API
 
 Usage:
     query.py <ClusterId> [User]
+
+NOTE: You need authentication to access data from the Elasticsearch database, that is why the ES_USER and ES_PASS are blanked 
+
 """
 
 import os
@@ -17,11 +20,13 @@ import elasticsearch
 
 # Constants
 ES_HOST = "https://elastic.osg.chtc.io/q"
-ES_USER = "*****"
-ES_PASS = "************"
 ES_INDEX = "adstash-ospool-job-history-*"
 MAX_RESULTS = 1000000
 SCROLL_DURATION = "5m"
+
+#Authenticaion to be filled
+ES_USER = "*****"  
+ES_PASS = "************"
 
 def connect_to_elasticsearch():
     es = elasticsearch.Elasticsearch(ES_HOST, http_auth=(ES_USER, ES_PASS))
