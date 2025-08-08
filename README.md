@@ -80,7 +80,7 @@ Transferring Output |                                                    |     0
  
 ### Example: Cluster Runtime Histogram Output
 
-<img width="400" height="200" alt="image" src="https://github.com/user-attachments/assets/d6102c28-8a1b-4d7e-b87b-2b0d6be26019" />
+<img width="500" height="300" alt="image" src="https://github.com/user-attachments/assets/d6102c28-8a1b-4d7e-b87b-2b0d6be26019" />
 
 
 
