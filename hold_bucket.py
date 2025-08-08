@@ -155,9 +155,9 @@ def bucket_and_print_table(reasons_by_code, cluster_id):
         for bucket in buckets:
             example_reason, subcode = bucket[0]
             percent = (len(bucket) / held_jobs) * 100 if held_jobs > 0 else 0
-            example_rows.append([label, subcode, f"{percent:.1f}%", example_reason])
+            example_rows.append([label, subcode, f"{percent:.1f}% ({len(bucket)})", example_reason])
 
-    headers = ["Hold Reason Label", "SubCode", "% of Held Jobs", "Example Reason"]
+    headers = ["Hold Reason Label", "SubCode", "% of Held Jobs (Count)", "Example Reason"]
     print(tabulate(example_rows, headers=headers, tablefmt="grid"))
 
     print("\nLegend:")
