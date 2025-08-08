@@ -53,6 +53,21 @@ HOLD_REASON_CODES = {
     48: {"label": "HookShadowPrepareJobFailure", "reason": "Prepare job shadow hook failed when it was executed; status code indicated job should be held."}
 }
 
+
+"""
+Groups similar hold reason messages using fuzzy string matching (difflib.SequenceMatcher).
+The default threshold has been kept as 0.7 as was found optimal by testing error messages
+
+    Parameters:
+        reason_list (List[str]): List of textual hold reasons for the jobs.
+        subcodes (List[int]): Corresponding subcodes for the reasons.
+        threshold (float): Similarity ratio (between 0 and 1) above which reasons are considered similar.
+
+    Returns:
+        List[List[Tuple[str, int]]]: A list of "buckets", where each bucket contains tuples of (reason, subcode)
+                                     that are textually similar to each other.
+"""
+
 def bucket_reasons_with_subcodes(reason_list, subcodes, threshold=0.7):
     buckets = []
     for reason, subcode in zip(reason_list, subcodes):
@@ -67,35 +82,18 @@ def bucket_reasons_with_subcodes(reason_list, subcodes, threshold=0.7):
             buckets.append([(reason, subcode)])
     return buckets
 
-def bucket_and_print_table(reasons_by_code, cluster_id):
-    print()
-    #print("Cluster ID:", cluster_id)
-    print("Total Jobs in Cluster:", total_jobs)
-    print("Held Jobs in Cluster:", sum(len(pairs) for pairs in reasons_by_code.values()))
 
-    example_rows = []
-    seen_codes = set()
 
-    for code, pairs in reasons_by_code.items():
-        reasons, subcodes = zip(*pairs)
-        label = HOLD_REASON_CODES.get(code, {}).get("label", f"Code {code}")
-        seen_codes.add(code)
-        buckets = bucket_reasons_with_subcodes(reasons, subcodes)
-        for bucket in buckets:
-            example_reason, subcode = bucket[0]
-            percent = (len(bucket) / total_jobs) * 100 if total_jobs > 0 else 0
-            example_rows.append([label, subcode, f"{percent:.1f}%", example_reason])
+""" 
+Queries the HTCondor schedd for held jobs in the specified cluster and groups them by their HoldReasonCode.
+The function then sends the groups of jobs with the same code to be bucketed by string similarity in bucket_reasons_with_subcodes()
 
-    headers = ["Hold Reason Label", "SubCode", "% of Jobs on Hold", "Example Reason"]
-    print(tabulate(example_rows, headers=headers, tablefmt="grid"))
+    Parameters:
+        cluster_id (str or int): The ID of the cluster to analyze.
 
-    print("\nLegend:")
-    legend = []
-    for code in sorted(seen_codes):
-        entry = HOLD_REASON_CODES.get(code, {})
-        legend.append([code, entry.get("label", "Unknown"), entry.get("reason", "No description available.")])
-    print(tabulate(legend, headers=["Code", "Label", "Reason"], tablefmt="fancy_grid"))
-
+    Returns:
+        Dict[int, List[Tuple[str, int]]]: A dictionary mapping each HoldReasonCode to a list of (HoldReason, HoldReasonSubCode) tuples.
+"""
 def group_by_code(cluster_id):
     global total_jobs
     schedd = htcondor.Schedd()
@@ -122,6 +120,64 @@ def group_by_code(cluster_id):
 
     return reasons_by_code
 
+
+
+
+
+""" 
+Processes grouped hold reasons and prints:
+        - A table summarizing the percentage of jobs held for each bucketed reason.
+        - A legend explaining each HoldReasonCode.
+The function also take the HoldReason string and stores only the error message. 
+
+NOTE: The information about the slots which sent the error which can be a future feature 
+
+    Parameters:
+        reasons_by_code (Dict[int, List[Tuple[str, int]]]): Dictionary grouping hold reasons by HoldReasonCode.
+        cluster_id (str or int): The cluster ID being analyzed.
+
+"""
+def bucket_and_print_table(reasons_by_code, cluster_id):
+    print()
+    print("Cluster ID:", cluster_id)
+    #print("Total Jobs in Cluster:", total_jobs)
+    print("Held Jobs in Cluster:", sum(len(pairs) for pairs in reasons_by_code.values()))
+
+    example_rows = []
+    seen_codes = set()
+
+    for code, pairs in reasons_by_code.items():
+        reasons, subcodes = zip(*pairs)
+        label = HOLD_REASON_CODES.get(code, {}).get("label", f"Code {code}")
+        seen_codes.add(code)
+        buckets = bucket_reasons_with_subcodes(reasons, subcodes)
+        for bucket in buckets:
+            example_reason, subcode = bucket[0]
+            percent = (len(bucket) / total_jobs) * 100 if total_jobs > 0 else 0
+            example_rows.append([label, subcode, f"{percent:.1f}%", example_reason])
+
+    headers = ["Hold Reason Label", "SubCode", "% of Jobs on Hold", "Example Reason"]
+    print(tabulate(example_rows, headers=headers, tablefmt="grid"))
+
+    print("\nLegend:")
+    legend = []
+    for code in sorted(seen_codes):
+        entry = HOLD_REASON_CODES.get(code, {})
+        legend.append([code, entry.get("label", "Unknown"), entry.get("reason", "No description available.")])
+    print(tabulate(legend, headers=["Code", "Label", "Reason"], tablefmt="fancy_grid"))
+
+
+
+
+""" 
+Main Execution Block:
+    - Parses the cluster ID from command-line arguments.
+    - Calls `group_by_code()` to gather held job reasons.
+    - Passes the results to `bucket_and_print_table()` to display the report.
+
+Example:
+    $ python condor_hold_bucket.py 123456
+"""
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python condor_hold_bucketer.py <ClusterId>")
