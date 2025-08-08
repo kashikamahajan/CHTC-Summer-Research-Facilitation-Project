@@ -29,7 +29,8 @@ ________
 
 ## ⚙️ Setup and Installation
 1. Clone this repository:
-2. You must have access to:
+2. Install all the packages in the requirements.txt
+3. You must have access to:
   - HTCondor Python bindings
   - Elasticsearch (if querying historical job data)
   ⚠️ Note: Some tools require authentication to the CHTC Elasticsearch instance, which is currently not available to general users.
@@ -51,8 +52,21 @@ ________
     Features:
       - Combines data from both queue and history
       - Highlights abnormal patterns using ASCII charts
+  
+      ### 📊 Example: Cluster Status Dashboard Output
+            Status | Bar                                                | Count |      %
+           Idle | █████████████                                      |  8686 |  27.0%
+        Running |                                                    |   433 |   1.3%
+       Removing |                                                    |     0 |   0.0%
+      Completed |                                                    |     0 |   0.0%
+           Held | ███████████████████████████████████                | 23067 |  71.7%
 
-2. Cluster Runtime Histogram
+
+
+  
+
+
+3. Cluster Runtime Histogram
     Purpose: Understand runtime variance across jobs
     Features:
       - Binned by percentiles
@@ -60,14 +74,14 @@ ________
       - Can print list of affected job IDs
 
 
-3. Hold Classifier
+4. Hold Classifier
     Purpose: Explain why jobs were held
     Features:
       - Clusters jobs by HoldReasonCode + HoldReasonSubCode
       - Displays percentage and example reasons
       - Includes human-readable legend of hold codes
 
-4. Resource Utilization Report
+5. Resource Utilization Report
     Purpose: Compare requested vs actual usage
     Features:
       - Summarizes CPU, memory, and disk usage
