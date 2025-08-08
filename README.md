@@ -53,7 +53,7 @@ ________
       - Combines data from both queue and history
       - Highlights abnormal patterns using ASCII charts
   
-      ### 📊 Example: Cluster Status Dashboard Output
+### Example: Cluster Status Dashboard Output
 ```
 Cluster 123 Status Dashboard
 
