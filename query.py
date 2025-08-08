@@ -1,3 +1,9 @@
+import os
+import csv
+import sys
+import elasticsearch
+
+
 """
 Elasticsearch Cluster Job Dumper
 
@@ -12,11 +18,6 @@ Usage:
 NOTE: You need authentication to access data from the Elasticsearch database, that is why the ES_USER and ES_PASS are blanked 
 
 """
-
-import os
-import csv
-import sys
-import elasticsearch
 
 # Constants
 ES_HOST = "https://elastic.osg.chtc.io/q"
