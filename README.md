@@ -55,7 +55,7 @@ ________
   
 ### Example: Cluster Status Dashboard Output
 ```
-Cluster 123 Status Dashboard
+Cluster 12345 Status Dashboard
 
              Status | Bar                                                | Count |      %
 -----------------------------------------------------------------------------------------
@@ -90,10 +90,12 @@ Transferring Output |                                                    |     0
       - Clusters jobs by HoldReasonCode + HoldReasonSubCode
       - Displays percentage and example reasons
       - Includes human-readable legend of hold codes
+  
+### Example: Hold Classifier Output
 
 ``` 
 
-Cluster ID: 4323611
+Cluster ID: 12345
 Held Jobs in Cluster: 109
 +---------------------+-----------+--------------------------+---------------------------------------------------------+
 | Hold Reason Label   |   SubCode | % of Held Jobs (Count)   | Example Reason                                          |
@@ -121,5 +123,57 @@ Legend:
       - Summarizes CPU, memory, and disk usage
       - Adds flags for under (<15%) or over (>80%) utilization
       - Includes bar chart and percentiles
+
+
+### Example: Resource Utilization ReportOutput  
+```
+================================================================================
+                       HTCondor Cluster Resource Summary                        
+================================================================================
+          Cluster ID: 12345
+           Job Count: 748
+         Avg Runtime: 0:56:52
+
+                              Requested Resources                               
+================================================================================
+Memory (GiB)   :
+                 0.49       GiB    1 job(s)
+                 12.0       GiB    1 job(s)
+                 50.0       GiB    746 job(s)
+
+Disk (GiB)     :
+                 0.1        GiB    1 job(s)
+                 10.0       GiB    1 job(s)
+                 30.0       GiB    746 job(s)
+
+CPUs           :
+                 1                 2 job(s)
+                 8                 746 job(s)
+
+GPUs           : No data
+                              Number Summary Table                              
+================================================================================
+Resource (units)         :    Min      Q1   Median      Q3     Max   StdDev
+--------------------------------------------------------------------------------
+Memory Used (GiB)        :    0.1     1.2      6.1    14.2    47.4     10.4
+Disk Used (GiB)          :    0.0     0.8      0.8     0.8     1.1      0.1
+CPU Usage (%)            :  0.0%%  32.1%%   35.8%%  44.8%%  85.5%%   11.0%%
+
+                              Overall Utilization                               
+================================================================================
+  Memory usage      [██████                                            ] 12.2%
+  Disk usage        [█                                                 ] 2.6%
+  CPU usage         [█████████████████                                 ] 35.8%
+
+                                Efficiency Notes                                
+================================================================================
+  ⚠️  Memory usage is 12.2%
+  ⚠️  Disk usage is 2.6%
+  ✅ CPU usage is 35.8%
+
+                                 End of Summary                                 
+================================================================================
+
+```
 
 
