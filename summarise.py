@@ -87,8 +87,8 @@ def main():
         print("No valid job data found.")
         return
 
-    print(f"\n📊 Summary for ClusterId: {cluster_id}")
-    print(f"🧾 Total Jobs: {total_jobs}\n")
+    print(f"\nSummary for ClusterId: {cluster_id}")
+    print(f"Total Jobs: {total_jobs}\n")
     print(tabulate(data, headers="keys", tablefmt="grid", floatfmt=".2f"))
 
 if __name__ == "__main__":
