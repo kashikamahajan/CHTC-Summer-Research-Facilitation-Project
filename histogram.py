@@ -1,9 +1,8 @@
-import pandas as pd
-import numpy as np
 import sys
 import os
+import pandas as pd
+import numpy as np
 import subprocess
-from datetime import datetime
 from datetime import datetime, timedelta
 
 """
@@ -12,6 +11,8 @@ of the runtimes for a cluster. The runtimes are grouped by percentile range of t
 
 """
 
+# Time limit for fast jobs, 600 by default
+is_red = median_time < 600
 
 # function to format seconds into human readable format
 def format_seconds_human(seconds):
@@ -124,7 +125,7 @@ def histogram(cluster_id, df, percentiles=10, max_width=20, show_fast_jobs=False
         in_bin_procs = proc_ids[in_bin_mask]
 
         median_time = np.median(in_bin_times) if len(in_bin_times) > 0 else 0
-        is_red = median_time < 600
+
 
         color = RED if is_red else ""
         if is_red:
