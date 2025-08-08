@@ -140,8 +140,9 @@ NOTE: The information about the slots which sent the error which can be a future
 def bucket_and_print_table(reasons_by_code, cluster_id):
     print()
     print("Cluster ID:", cluster_id)
-    #print("Total Jobs in Cluster:", total_jobs)
-    print("Held Jobs in Cluster:", sum(len(pairs) for pairs in reasons_by_code.values()))
+
+    held_jobs = sum(len(pairs) for pairs in reasons_by_code.values())
+    print("Held Jobs in Cluster:", held_jobs)
 
     example_rows = []
     seen_codes = set()
@@ -153,10 +154,10 @@ def bucket_and_print_table(reasons_by_code, cluster_id):
         buckets = bucket_reasons_with_subcodes(reasons, subcodes)
         for bucket in buckets:
             example_reason, subcode = bucket[0]
-            percent = (len(bucket) / total_jobs) * 100 if total_jobs > 0 else 0
+            percent = (len(bucket) / held_jobs) * 100 if held_jobs > 0 else 0
             example_rows.append([label, subcode, f"{percent:.1f}%", example_reason])
 
-    headers = ["Hold Reason Label", "SubCode", "% of Jobs on Hold", "Example Reason"]
+    headers = ["Hold Reason Label", "SubCode", "% of Held Jobs", "Example Reason"]
     print(tabulate(example_rows, headers=headers, tablefmt="grid"))
 
     print("\nLegend:")
@@ -165,6 +166,7 @@ def bucket_and_print_table(reasons_by_code, cluster_id):
         entry = HOLD_REASON_CODES.get(code, {})
         legend.append([code, entry.get("label", "Unknown"), entry.get("reason", "No description available.")])
     print(tabulate(legend, headers=["Code", "Label", "Reason"], tablefmt="fancy_grid"))
+
 
 
 
